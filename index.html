@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Pelacak Lokasi GPS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Leaflet CSS -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: #2c7be5;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        #map {
+            height: 70vh;
+            width: 100%;
+        }
+
+        .info {
+            padding: 15px;
+            background: white;
+        }
+
+        button {
+            padding: 10px 15px;
+            background: #2c7be5;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1a5fd0;
+        }
+
+        .coords {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h2>📍 Website Pelacak Lokasi GPS</h2>
+    <p>(Dengan Izin Pengguna)</p>
+</header>
+
+<div id="map"></div>
+
+<div class="info">
+    <button onclick="getLocation()">Ambil / Update Lokasi</button>
+    <div class="coords" id="coords">Lokasi belum diambil</div>
+</div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    let map = L.map('map').setView([-6.200000, 106.816666], 13); // Default Jakarta
+    let marker;
+
+    // Load map
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    function getLocation() {
+        if (!navigator.geolocation) {
+            alert("Browser tidak mendukung GPS");
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+
+                document.getElementById("coords").innerHTML =
+                    `Latitude: ${lat}<br>Longitude: ${lng}`;
+
+                map.setView([lat, lng], 16);
+
+                if (marker) {
+                    marker.setLatLng([lat, lng]);
+                } else {
+                    marker = L.marker([lat, lng]).addTo(map);
+                }
+
+                marker.bindPopup("📍 Lokasi Anda").openPopup();
+            },
+            function(error) {
+                alert("Izin lokasi ditolak atau tidak tersedia");
+            }
+        );
+    }
+</script>
+
+</body>
+</html>
